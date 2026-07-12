@@ -86,6 +86,15 @@ struct WebView: UIViewRepresentable {
             let script = "if (typeof setPlatform === 'function') { setPlatform('ios'); }"
             webView.evaluateJavaScript(script, completionHandler: nil)
 
+                        // Custom Kiosk Blocker Script Injection
+            let kioskBlockerScript = """
+            const cleanStyle = document.createElement('style');
+            cleanStyle.innerHTML = '.unwanted-banner, #cookie-consent, .sidebar-ads { display: none !important; }';
+            document.head.appendChild(cleanStyle);
+            """
+            webView.evaluateJavaScript(kioskBlockerScript, completionHandler: nil)
+
+
             // Notify plugins that the page has loaded
             if let url = webView.url {
                 PluginManager.shared.webViewDidFinishLoad(url: url)
