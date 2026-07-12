@@ -1,19 +1,19 @@
 name: Build Kiosk Webview App
 
 on:
-  workflow_dispatch: # Allows manual trigger click within browser panel
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: macos-latest # Fires up a clean macOS virtual environment instance
+    runs-on: macos-latest
     steps:
     - name: Checkout Source Code
-      uses: actions/checkout@v4 # Clones repository into cloud engine container
+      uses: actions/checkout@v4
 
     - name: Select Core Xcode Environment
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: 'latest-stable' # Leverages up-to-date apple tools arrays
+        xcode-version: 'latest-stable'
 
     - name: Compile and Archive Xcode App Package
       run: |
@@ -21,6 +21,8 @@ jobs:
                    -scheme "iOS-SmartWebView" \
                    -configuration Release \
                    -sdk iphoneos \
+                   -parallelizeTargets \
+                   COMPILER_INDEX_STORE_ENABLE=NO \
                    CODE_SIGNING_ALLOWED=NO \
                    CODE_SIGNING_REQUIRED=NO \
                    clean archive -archivePath $PWD/build/KioskApp.xcarchive
@@ -33,7 +35,7 @@ jobs:
         zip -r KioskApp.ipa Payload
 
     - name: Publish Compiled Application Artifact
-      uses: actions/upload-artifact@v4 # Uploads build to browser dashboard
+      uses: actions/upload-artifact@v4
       with:
         name: Kiosk-Unsigned-IPA
         path: build/KioskApp.ipa
